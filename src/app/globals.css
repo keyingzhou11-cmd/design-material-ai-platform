@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #F5F0EB;
+    --foreground: #1A1A1A;
+    --accent: #E85D04;
+    --muted: #6B6560;
+    --border: #EBE4DC;
+  }
+
+  * {
+    @apply border-beige-200;
+  }
+
+  body {
+    @apply bg-beige-100 text-ink antialiased;
+  }
+
+  ::selection {
+    @apply bg-accent/20 text-ink;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #D9CFC4 transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #D9CFC4;
+    border-radius: 3px;
+  }
+}
+
+/* Masonry columns for Pinterest-style grid */
+.masonry-grid {
+  columns: 1;
+  column-gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .masonry-grid {
+    columns: 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .masonry-grid {
+    columns: 3;
+  }
+}
+
+@media (min-width: 1280px) {
+  .masonry-grid {
+    columns: 4;
+  }
+}
+
+.masonry-item {
+  break-inside: avoid;
+  margin-bottom: 1rem;
+}
