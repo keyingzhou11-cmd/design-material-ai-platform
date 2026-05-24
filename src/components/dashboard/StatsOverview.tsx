@@ -1,17 +1,64 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { Image, FolderOpen, Sparkles, Heart } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 
-const stats = [
-  { label: 'Materials', value: '128', icon: Image, change: '+12 this week' },
-  { label: 'Projects', value: '6', icon: FolderOpen, change: '2 active' },
-  { label: 'AI Analyses', value: '34', icon: Sparkles, change: '+5 today' },
-  { label: 'Favorites', value: '42', icon: Heart, change: 'Curated picks' },
-];
+type DashboardStats = {
+  materialsTotal: number;
+  projectsTotal: number;
+  analysesTotal: number;
+  favoritesTotal: number;
+};
+
+const EMPTY_STATS: DashboardStats = {
+  materialsTotal: 0,
+  projectsTotal: 0,
+  analysesTotal: 0,
+  favoritesTotal: 0,
+};
 
 export function StatsOverview() {
+  const [stats, setStats] = useState<DashboardStats>(EMPTY_STATS);
+
+  useEffect(() => {
+    let active = true;
+
+    async function fetchStats() {
+      try {
+        const res = await fetch('/api/dashboard/stats', { cache: 'no-store' });
+        if (!res.ok) throw new Error('Dashboard stats request failed');
+        const data = (await res.json()) as Partial<DashboardStats>;
+
+        if (!active) return;
+        setStats({
+          materialsTotal: Number(data.materialsTotal ?? 0),
+          projectsTotal: Number(data.projectsTotal ?? 0),
+          analysesTotal: Number(data.analysesTotal ?? 0),
+          favoritesTotal: Number(data.favoritesTotal ?? 0),
+        });
+      } catch {
+        if (active) setStats(EMPTY_STATS);
+      }
+    }
+
+    void fetchStats();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const statItems = [
+    { label: '素材总数', value: stats.materialsTotal, icon: Image, change: '已上传素材' },
+    { label: '项目空间', value: stats.projectsTotal, icon: FolderOpen, change: '当前项目' },
+    { label: 'AI 分析', value: stats.analysesTotal, icon: Sparkles, change: '分析记录' },
+    { label: '收藏灵感', value: stats.favoritesTotal, icon: Heart, change: '已收藏素材' },
+  ];
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      {stats.map((stat) => (
+      {statItems.map((stat) => (
         <Card key={stat.label} className="p-5">
           <div className="flex items-start justify-between">
             <div>

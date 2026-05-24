@@ -47,11 +47,11 @@ export function MaterialDetailSheet({ material, onClose, onAnalyze }: MaterialDe
             ))}
           </div>
 
-          <p className="text-xs text-ink-faint">Added {formatDate(material.created_at)}</p>
+          <p className="text-xs text-ink-faint">添加于 {formatDate(material.created_at)}</p>
 
           {onAnalyze && (
             <Button className="w-full" onClick={() => onAnalyze(material)}>
-              Analyze with AI
+              用 AI 分析
             </Button>
           )}
         </div>

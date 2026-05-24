@@ -14,19 +14,19 @@ import type { Material } from '@/types';
 
 export default function LibraryPage() {
   const router = useRouter();
-  const { materials, loading, filters, setFilters, toggleFavorite } = useMaterials();
+  const { materials, loading, filters, setFilters, toggleFavorite, refetch } = useMaterials();
   const [uploadOpen, setUploadOpen] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
 
   return (
     <>
       <PageHeader
-        title="Library"
-        description="Browse and manage your design materials"
+        title="素材库"
+        description="管理你的设计参考、图片素材与灵感标签"
         actions={
           <Button onClick={() => setUploadOpen(true)}>
             <Upload className="h-4 w-4" />
-            Upload
+            上传
           </Button>
         }
       />
@@ -42,12 +42,21 @@ export default function LibraryPage() {
       <MaterialUploader
         open={uploadOpen}
         onClose={() => setUploadOpen(false)}
-        onUpload={async ({ title, categoryId, file }) => {
+        onUpload={async ({ title, categoryId, tags, file }) => {
           const formData = new FormData();
           formData.append('file', file);
           formData.append('title', title);
           formData.append('categoryId', categoryId);
-          await fetch('/api/upload', { method: 'POST', body: formData });
+          formData.append('tags', tags);
+
+          const res = await fetch('/api/upload', { method: 'POST', body: formData });
+          const data = await res.json().catch(() => null);
+
+          if (!res.ok) {
+            throw new Error(data?.error || '上传失败，请稍后重试。');
+          }
+
+          await refetch();
         }}
       />
 

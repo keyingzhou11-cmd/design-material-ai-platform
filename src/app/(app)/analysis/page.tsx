@@ -5,8 +5,8 @@ export default function AnalysisPage() {
   return (
     <>
       <PageHeader
-        title="AI Analysis"
-        description="Deep design insights powered by AI vision"
+        title="AI 灵感分析"
+        description="从色彩、字体、版式与风格气质中提炼设计判断"
       />
       <AnalysisPanel />
     </>

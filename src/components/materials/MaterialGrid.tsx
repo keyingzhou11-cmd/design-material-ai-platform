@@ -36,8 +36,8 @@ export function MaterialGrid({
   if (materials.length === 0) {
     return (
       <EmptyState
-        title="No materials found"
-        description="Try adjusting your filters or upload new design materials."
+        title="暂无匹配素材"
+        description="可以调整筛选条件，或上传新的设计参考。"
       />
     );
   }

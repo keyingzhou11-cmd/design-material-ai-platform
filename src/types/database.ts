@@ -36,6 +36,13 @@ export interface Database {
           color: string;
           created_at: string;
         };
+        Insert: {
+          id?: string;
+          name: string;
+          slug: string;
+          color?: string;
+        };
+        Update: Partial<Database['public']['Tables']['categories']['Insert']>;
       };
       tags: {
         Row: {
@@ -44,6 +51,23 @@ export interface Database {
           slug: string;
           created_at: string;
         };
+        Insert: {
+          id?: string;
+          name: string;
+          slug: string;
+        };
+        Update: Partial<Database['public']['Tables']['tags']['Insert']>;
+      };
+      material_tags: {
+        Row: {
+          material_id: string;
+          tag_id: string;
+        };
+        Insert: {
+          material_id: string;
+          tag_id: string;
+        };
+        Update: Partial<Database['public']['Tables']['material_tags']['Insert']>;
       };
       materials: {
         Row: {
@@ -60,6 +84,7 @@ export interface Database {
           file_size: number | null;
           is_favorite: boolean;
           metadata: Json;
+          embedding?: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -77,6 +102,7 @@ export interface Database {
           file_size?: number | null;
           is_favorite?: boolean;
           metadata?: Json;
+          embedding?: string | null;
         };
         Update: Partial<Database['public']['Tables']['materials']['Insert']>;
       };
@@ -112,6 +138,15 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
+        Insert: {
+          id?: string;
+          project_id?: string | null;
+          name?: string;
+          width?: number;
+          height?: number;
+          background_color?: string;
+        };
+        Update: Partial<Database['public']['Tables']['moodboards']['Insert']>;
       };
       canvas_states: {
         Row: {
@@ -122,6 +157,13 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
+        Insert: {
+          id?: string;
+          moodboard_id?: string | null;
+          state?: Json;
+          version?: number;
+        };
+        Update: Partial<Database['public']['Tables']['canvas_states']['Insert']>;
       };
       ai_analyses: {
         Row: {
@@ -134,6 +176,16 @@ export interface Database {
           tags_suggested: string[] | null;
           created_at: string;
         };
+        Insert: {
+          id?: string;
+          material_id?: string | null;
+          user_id?: string | null;
+          analysis_type?: 'full' | 'color' | 'typography' | 'layout';
+          result?: Json;
+          summary?: string | null;
+          tags_suggested?: string[] | null;
+        };
+        Update: Partial<Database['public']['Tables']['ai_analyses']['Insert']>;
       };
       daily_recommendations: {
         Row: {
@@ -144,7 +196,28 @@ export interface Database {
           recommendation_date: string;
           created_at: string;
         };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          material_ids?: string[];
+          reason?: string | null;
+          recommendation_date?: string;
+        };
+        Update: Partial<Database['public']['Tables']['daily_recommendations']['Insert']>;
       };
     };
+    Views: Record<string, never>;
+    Functions: {
+      match_materials: {
+        Args: {
+          query_embedding: number[];
+          match_user_id: string;
+          match_count?: number;
+        };
+        Returns: Array<Database['public']['Tables']['materials']['Row'] & { similarity: number }>;
+      };
+    };
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 }

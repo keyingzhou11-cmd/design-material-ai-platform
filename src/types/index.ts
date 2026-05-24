@@ -38,10 +38,10 @@ export interface NavItem {
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  { label: 'Dashboard', href: '/dashboard', icon: 'LayoutDashboard' },
-  { label: 'Library', href: '/library', icon: 'Library' },
-  { label: 'Workspace', href: '/workspace/p1', icon: 'Palette' },
-  { label: 'AI Analysis', href: '/analysis', icon: 'Sparkles' },
-  { label: 'Projects', href: '/projects', icon: 'FolderOpen' },
-  { label: 'Settings', href: '/settings', icon: 'Settings' },
+  { label: '今日灵感', href: '/dashboard', icon: 'LayoutDashboard' },
+  { label: '素材库', href: '/library', icon: 'Library' },
+  { label: '灵感画板', href: '/workspace/p1', icon: 'Palette' },
+  { label: 'AI 灵感分析', href: '/analysis', icon: 'Sparkles' },
+  { label: '项目空间', href: '/projects', icon: 'FolderOpen' },
+  { label: '偏好设置', href: '/settings', icon: 'Settings' },
 ];

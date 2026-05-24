@@ -26,7 +26,9 @@ export async function addImageToCanvas(
 }
 
 export function serializeCanvas(canvas: Canvas): object {
-  return canvas.toJSON(['data']);
+  return (canvas as Canvas & { toJSON: (propertiesToInclude?: string[]) => object }).toJSON([
+    'data',
+  ]);
 }
 
 export async function loadCanvasState(canvas: Canvas, state: object): Promise<void> {
@@ -41,6 +43,38 @@ export function deleteSelected(canvas: Canvas): void {
     canvas.discardActiveObject();
     canvas.renderAll();
   }
+}
+
+export function rotateSelected(canvas: Canvas, degrees = 15): void {
+  const active = canvas.getActiveObject();
+  if (!active) return;
+
+  active.rotate((active.angle || 0) + degrees);
+  active.setCoords();
+  canvas.renderAll();
+  canvas.fire('object:modified', { target: active });
+}
+
+export async function duplicateSelected(canvas: Canvas): Promise<void> {
+  const active = canvas.getActiveObject();
+  if (!active) return;
+
+  const cloned = await active.clone();
+  cloned.set({
+    left: (active.left || 0) + 24,
+    top: (active.top || 0) + 24,
+  });
+
+  canvas.add(cloned);
+  canvas.setActiveObject(cloned);
+  canvas.renderAll();
+}
+
+export function zoomCanvas(canvas: Canvas, factor: number): void {
+  const currentZoom = canvas.getZoom() || 1;
+  const nextZoom = Math.min(Math.max(currentZoom * factor, 0.4), 2.5);
+  canvas.setZoom(nextZoom);
+  canvas.renderAll();
 }
 
 export async function replaceSelectedImage(canvas: Canvas, imageUrl: string): Promise<void> {
@@ -58,7 +92,7 @@ export async function replaceSelectedImage(canvas: Canvas, imageUrl: string): Pr
     angle: active.angle,
     scaleX,
     scaleY,
-    data: active.data,
+    data: (active as typeof active & { data?: unknown }).data,
   });
 
   canvas.remove(active);

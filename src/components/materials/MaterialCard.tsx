@@ -65,7 +65,7 @@ export function MaterialCard({
                 onAddToCanvas(material);
               }}
               className="rounded-full p-2 bg-accent text-white backdrop-blur-md hover:bg-accent-hover transition-colors"
-              title="Add to canvas"
+              title="添加到画板"
             >
               <Plus className="h-4 w-4" />
             </button>

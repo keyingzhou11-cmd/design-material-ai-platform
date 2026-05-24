@@ -15,7 +15,7 @@ export function RecentMaterials() {
     <Card className="p-6">
       <div className="flex items-center gap-2 mb-5">
         <Clock className="h-4 w-4 text-ink-faint" />
-        <h2 className="font-display text-lg text-ink">Recent Uploads</h2>
+        <h2 className="font-display text-lg text-ink">最近上传</h2>
       </div>
 
       <div className="space-y-3">

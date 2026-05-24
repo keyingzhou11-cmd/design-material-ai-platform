@@ -22,13 +22,13 @@ export function MaterialTray({ materials, onSelect, selectedId }: MaterialTrayPr
   return (
     <aside className="w-72 flex-shrink-0 border-r border-beige-200 bg-beige-50 flex flex-col h-full">
       <div className="p-4 border-b border-beige-200">
-        <h3 className="font-display text-sm text-ink mb-3">Materials</h3>
+        <h3 className="font-display text-sm text-ink mb-3">素材</h3>
         <SearchInput
           value={search}
           onChange={setSearch}
-          placeholder="Filter materials..."
+          placeholder="筛选素材..."
         />
-        <p className="mt-2 text-xs text-ink-faint">Click to add to canvas</p>
+        <p className="mt-2 text-xs text-ink-faint">点击即可加入画板</p>
       </div>
 
       <div className="flex-1 overflow-y-auto scrollbar-thin p-3 space-y-2">

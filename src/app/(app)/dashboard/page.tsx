@@ -7,8 +7,8 @@ export default function DashboardPage() {
   return (
     <>
       <PageHeader
-        title="Dashboard"
-        description="Your design inspiration at a glance"
+        title="今日灵感"
+        description="快速浏览今天值得关注的设计线索"
       />
       <StatsOverview />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

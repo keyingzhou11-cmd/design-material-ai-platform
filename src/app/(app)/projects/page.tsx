@@ -14,12 +14,12 @@ export default function ProjectsPage() {
   return (
     <>
       <PageHeader
-        title="Projects"
-        description="Organize your moodboards and design explorations"
+        title="项目空间"
+        description="沉淀不同方向的画板、参考与设计探索"
         actions={
           <Button>
             <Plus className="h-4 w-4" />
-            New Project
+            新建项目
           </Button>
         }
       />
@@ -38,7 +38,7 @@ export default function ProjectsPage() {
                   />
                 )}
                 <div className="absolute top-3 left-3">
-                  <Badge variant="accent">{project.status}</Badge>
+                  <Badge variant="accent">{project.status === 'active' ? '进行中' : '已归档'}</Badge>
                 </div>
               </div>
               <div className="p-5">
@@ -49,7 +49,7 @@ export default function ProjectsPage() {
                     {project.description && (
                       <p className="text-sm text-ink-muted mt-1 line-clamp-2">{project.description}</p>
                     )}
-                    <p className="text-xs text-ink-faint mt-3">Updated {formatDate(project.updated_at)}</p>
+                    <p className="text-xs text-ink-faint mt-3">更新于 {formatDate(project.updated_at)}</p>
                   </div>
                 </div>
               </div>

@@ -13,8 +13,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: 'Atelier �?Design Inspiration Platform',
-  description: 'AI-powered design inspiration collection and analysis',
+  title: 'Atelier｜AI 设计灵感平台',
+  description: '面向设计师的灵感收集、分析与画板工作台',
 };
 
 export default function RootLayout({
@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+    <html lang="zh-CN" className={`${inter.variable} ${playfair.variable}`}>
       <body className="font-sans">{children}</body>
     </html>
   );

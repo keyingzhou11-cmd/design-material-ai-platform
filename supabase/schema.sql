@@ -3,6 +3,7 @@
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS vector;
 
 -- ─── Profiles ───────────────────────────────────────────────
 CREATE TABLE profiles (
@@ -57,6 +58,7 @@ CREATE TABLE materials (
   file_size INT,
   is_favorite BOOLEAN DEFAULT FALSE,
   metadata JSONB DEFAULT '{}',
+  embedding VECTOR(1536),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -64,6 +66,8 @@ CREATE TABLE materials (
 CREATE INDEX idx_materials_user_id ON materials(user_id);
 CREATE INDEX idx_materials_category_id ON materials(category_id);
 CREATE INDEX idx_materials_created_at ON materials(created_at DESC);
+CREATE INDEX idx_materials_embedding ON materials USING ivfflat (embedding vector_cosine_ops)
+  WITH (lists = 100);
 
 -- ─── Material Tags (junction) ───────────────────────────────
 CREATE TABLE material_tags (
@@ -156,6 +160,7 @@ CREATE TRIGGER canvas_states_updated_at BEFORE UPDATE ON canvas_states
 -- ─── Row Level Security ───────────────────────────────────────
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE materials ENABLE ROW LEVEL SECURITY;
+ALTER TABLE material_tags ENABLE ROW LEVEL SECURITY;
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE moodboards ENABLE ROW LEVEL SECURITY;
 ALTER TABLE canvas_states ENABLE ROW LEVEL SECURITY;
@@ -173,12 +178,28 @@ CREATE POLICY "Users can insert own profile" ON profiles
 -- Materials
 CREATE POLICY "Users can view own materials" ON materials
   FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can view global materials" ON materials
+  FOR SELECT USING (user_id IS NULL);
 CREATE POLICY "Users can insert own materials" ON materials
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can update own materials" ON materials
   FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "Users can delete own materials" ON materials
   FOR DELETE USING (auth.uid() = user_id);
+
+-- Material tags inherit access from materials
+CREATE POLICY "Users can view own material tags" ON material_tags
+  FOR SELECT USING (
+    EXISTS (SELECT 1 FROM materials WHERE materials.id = material_tags.material_id AND materials.user_id = auth.uid())
+  );
+CREATE POLICY "Users can insert own material tags" ON material_tags
+  FOR INSERT WITH CHECK (
+    EXISTS (SELECT 1 FROM materials WHERE materials.id = material_tags.material_id AND materials.user_id = auth.uid())
+  );
+CREATE POLICY "Users can delete own material tags" ON material_tags
+  FOR DELETE USING (
+    EXISTS (SELECT 1 FROM materials WHERE materials.id = material_tags.material_id AND materials.user_id = auth.uid())
+  );
 
 -- Projects
 CREATE POLICY "Users can CRUD own projects" ON projects
@@ -215,6 +236,60 @@ ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tags ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Anyone can read categories" ON categories FOR SELECT USING (true);
 CREATE POLICY "Anyone can read tags" ON tags FOR SELECT USING (true);
+CREATE POLICY "Authenticated users can create tags" ON tags
+  FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+CREATE POLICY "Authenticated users can update tags" ON tags
+  FOR UPDATE USING (auth.uid() IS NOT NULL);
+
+-- Semantic material search, used by /api/search/semantic
+CREATE OR REPLACE FUNCTION match_materials(
+  query_embedding VECTOR(1536),
+  match_user_id UUID,
+  match_count INT DEFAULT 24
+)
+RETURNS TABLE (
+  id UUID,
+  user_id UUID,
+  title TEXT,
+  description TEXT,
+  image_url TEXT,
+  thumbnail_url TEXT,
+  source_url TEXT,
+  category_id UUID,
+  width INT,
+  height INT,
+  file_size INT,
+  is_favorite BOOLEAN,
+  metadata JSONB,
+  created_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ,
+  similarity FLOAT
+)
+LANGUAGE SQL STABLE
+AS $$
+  SELECT
+    materials.id,
+    materials.user_id,
+    materials.title,
+    materials.description,
+    materials.image_url,
+    materials.thumbnail_url,
+    materials.source_url,
+    materials.category_id,
+    materials.width,
+    materials.height,
+    materials.file_size,
+    materials.is_favorite,
+    materials.metadata,
+    materials.created_at,
+    materials.updated_at,
+    1 - (materials.embedding <=> query_embedding) AS similarity
+  FROM materials
+  WHERE materials.user_id = match_user_id
+    AND materials.embedding IS NOT NULL
+  ORDER BY materials.embedding <=> query_embedding
+  LIMIT match_count;
+$$;
 
 -- ─── Storage bucket ───────────────────────────────────────────
 -- Run in Supabase Dashboard → Storage:

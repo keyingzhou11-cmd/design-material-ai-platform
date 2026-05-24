@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import {
   LayoutDashboard,
   Library,
@@ -9,9 +10,12 @@ import {
   Sparkles,
   FolderOpen,
   Settings,
+  LogOut,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NAV_ITEMS } from '@/types';
+import { createClient } from '@/lib/supabase/client';
+import { isSupabaseConfigured } from '@/lib/supabase/config';
 
 const iconMap = {
   LayoutDashboard,
@@ -24,6 +28,23 @@ const iconMap = {
 
 export function Sidebar() {
   const pathname = usePathname();
+  const [user, setUser] = useState<{ email?: string; name?: string } | null>(null);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured()) return;
+
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) {
+        setUser({
+          email: data.user.email || undefined,
+          name:
+            (data.user.user_metadata?.full_name as string | undefined) ||
+            data.user.email?.split('@')[0],
+        });
+      }
+    });
+  }, []);
 
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-60 flex-col border-r border-beige-200 bg-beige-50">
@@ -68,12 +89,23 @@ export function Sidebar() {
       <div className="border-t border-beige-200 p-4">
         <div className="flex items-center gap-3 rounded-xl px-3 py-2">
           <div className="h-8 w-8 rounded-full bg-beige-200 flex items-center justify-center text-sm font-medium text-ink-muted">
-            D
+            {(user?.name || '设').charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-ink truncate">Designer</p>
-            <p className="text-xs text-ink-faint truncate">designer@atelier.app</p>
+            <p className="text-sm font-medium text-ink truncate">{user?.name || '设计师'}</p>
+            <p className="text-xs text-ink-faint truncate">{user?.email || 'atelier@studio.design'}</p>
           </div>
+          {user && (
+            <form action="/auth/logout" method="post">
+              <button
+                type="submit"
+                title="退出登录"
+                className="rounded-lg p-2 text-ink-faint hover:bg-beige-200/60 hover:text-ink"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </aside>

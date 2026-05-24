@@ -4,7 +4,7 @@ import { MOCK_MATERIALS } from '@/lib/mock-data';
 export async function GET() {
   const picks = MOCK_MATERIALS.slice(0, 4).map((m) => m.id);
   const reason =
-    'Curated for your editorial minimal aesthetic — warm tones, strong typography, and clean layouts.';
+    '基于你偏好的编辑感与极简风格，为你挑选了暖调、强字体层级与清爽版式的参考。';
 
   try {
     const { createClient } = await import('@/lib/supabase/server');

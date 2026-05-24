@@ -1,11 +1,11 @@
 'use client';
 
+import { Heart, SlidersHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { Button } from '@/components/ui/Button';
 import { MOCK_CATEGORIES } from '@/lib/mock-data';
 import type { MaterialFilters } from '@/types';
-import { Heart, SlidersHorizontal } from 'lucide-react';
 
 interface MaterialFiltersBarProps {
   filters: MaterialFilters;
@@ -19,7 +19,7 @@ export function MaterialFiltersBar({ filters, onChange }: MaterialFiltersBarProp
         <SearchInput
           value={filters.search}
           onChange={(search) => onChange({ ...filters, search })}
-          placeholder="Search materials..."
+          placeholder="搜索素材..."
           className="w-full lg:w-80"
         />
 
@@ -34,7 +34,7 @@ export function MaterialFiltersBar({ filters, onChange }: MaterialFiltersBarProp
                 : 'bg-white text-ink-muted border border-beige-200 hover:border-beige-300'
             )}
           >
-            All
+            全部
           </button>
           {MOCK_CATEGORIES.map((cat) => (
             <button
@@ -65,7 +65,7 @@ export function MaterialFiltersBar({ filters, onChange }: MaterialFiltersBarProp
             onClick={() => onChange({ ...filters, favoritesOnly: !filters.favoritesOnly })}
           >
             <Heart className={cn('h-3.5 w-3.5', filters.favoritesOnly && 'fill-current')} />
-            Favorites
+            收藏
           </Button>
 
           <select
@@ -75,9 +75,9 @@ export function MaterialFiltersBar({ filters, onChange }: MaterialFiltersBarProp
             }
             className="rounded-xl border border-beige-200 bg-white px-3 py-1.5 text-xs text-ink-muted focus:outline-none focus:ring-2 focus:ring-accent/20"
           >
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
-            <option value="title">Title A–Z</option>
+            <option value="newest">最新优先</option>
+            <option value="oldest">最早优先</option>
+            <option value="title">按标题排序</option>
           </select>
 
           <Button variant="ghost" size="sm">

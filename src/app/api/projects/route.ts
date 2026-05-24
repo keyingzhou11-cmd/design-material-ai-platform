@@ -32,6 +32,6 @@ export async function POST(request: Request) {
     if (error) throw error;
     return NextResponse.json(data, { status: 201 });
   } catch {
-    return NextResponse.json({ error: 'Failed to create project' }, { status: 500 });
+    return NextResponse.json({ error: '创建项目失败' }, { status: 500 });
   }
 }

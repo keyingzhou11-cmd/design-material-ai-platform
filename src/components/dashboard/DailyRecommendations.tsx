@@ -9,7 +9,7 @@ import { MOCK_MATERIALS } from '@/lib/mock-data';
 
 const dailyPicks = MOCK_MATERIALS.slice(0, 4);
 const reason =
-  'Curated for your editorial minimal aesthetic — warm tones, strong typography, and clean layouts dominate today\'s selection.';
+  '围绕温暖的编辑感、清晰的字体层级与克制版式，为你整理了今天值得参考的灵感方向。';
 
 export function DailyRecommendations() {
   return (
@@ -17,11 +17,11 @@ export function DailyRecommendations() {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-accent" />
-          <h2 className="font-display text-xl text-ink">Today&apos;s Picks</h2>
-          <Badge variant="accent">AI Curated</Badge>
+          <h2 className="font-display text-xl text-ink">今日精选</h2>
+          <Badge variant="accent">AI 精选</Badge>
         </div>
         <Link href="/library" className="text-sm text-accent hover:underline flex items-center gap-1">
-          View all <ArrowRight className="h-3.5 w-3.5" />
+          查看全部 <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
 
